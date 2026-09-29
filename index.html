@@ -3,191 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCR To Let Services - Flats & Rental Properties</title>
+    <title>NCR Properties | Buy, Rent & Sell Properties in Delhi NCR</title>
+    
     <!-- Google Fonts & Font Awesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-light: #f8fafc;
+            --card-border: #e2e8f0;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            background-color: #f4f7f6;
-            color: #333;
-            padding-bottom: 80px;
-        }
-        header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-        }
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-        .section-title {
-            text-align: center;
-            margin: 30px 0 15px;
-            font-size: 1.5rem;
-            color: #222;
-        }
-        
-        /* Property Cards */
-        .property-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card-media {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background-color: #ddd;
-        }
-        .card-content {
-            padding: 15px;
-        }
-        .card-title {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            color: #007bff;
-        }
-        .price {
-            font-weight: 600;
-            color: #28a745;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-        .details {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 15px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Buttons */
+        body {
+            background-color: var(--bg-light);
+            color: #334155;
+            padding-bottom: 60px;
+        }
+
+        /* NAVIGATION BAR */
+        nav {
+            background: #ffffff;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span { color: var(--primary); }
+        .nav-contact {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* HERO & FILTER SECTION */
+        .hero-search-section {
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), 
+                        url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1600&q=80') center/cover;
+            padding: 60px 20px 80px;
+            text-align: center;
+            color: white;
+        }
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .hero-subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        /* ADVANCED FILTER FORM */
+        .filter-card {
+            max-width: 1100px;
+            margin: -40px auto 40px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border: 1px solid var(--card-border);
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .filter-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.95rem;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+        .btn-reset {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-reset:hover { background: #e2e8f0; }
+
+        /* PROPERTY CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        /* PROPERTY GRID */
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            gap: 30px;
+        }
+
+        /* PROPERTY CARD */
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        /* MEDIA & BADGES */
+        .card-media-box {
+            position: relative;
+            height: 220px;
+            background: #000;
+        }
+        .card-media-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .card-media-box img:hover { opacity: 0.9; }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: white;
+            z-index: 5;
+        }
+        .badge-type { left: 15px; background: var(--secondary); }
+        .badge-status { right: 15px; }
+        .status-sale { background: var(--primary); }
+        .status-rent { background: #8b5cf6; }
+        .status-sold { background: var(--danger); }
+
+        .city-tag {
+            position: absolute;
+            bottom: 12px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* CARD CONTENT */
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .price {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .card.is-sold .price {
+            color: var(--danger);
+            text-decoration: line-through;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .location {
+            font-size: 0.88rem;
+            color: #64748b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* PROPERTY SPECS GRID */
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+        }
+        .spec-item {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .spec-item strong {
+            display: block;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        /* CARD BUTTONS */
         .btn-group {
+            margin-top: auto;
             display: flex;
             gap: 10px;
         }
         .btn {
             flex: 1;
             padding: 10px;
-            text-align: center;
-            border-radius: 6px;
-            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.88rem;
             font-weight: 600;
-            font-size: 0.9rem;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
-        .btn-call {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-wa {
-            background-color: #25d366;
-            color: white;
-        }
+        .btn-call { background: #eff6ff; color: var(--primary); }
+        .btn-call:hover { background: #dbeafe; }
+        .btn-wa { background: #25d366; color: white; }
+        .btn-wa:hover { background: #1da851; }
+        .btn-sold { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; width: 100%; }
 
-        /* Floating WhatsApp Button */
-        .whatsapp-float {
+        /* FLOATING WHATSAPP */
+        .wa-float {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #25d366;
+            bottom: 25px;
+            right: 25px;
+            background: #25d366;
             color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50px;
-            text-align: center;
-            font-size: 32px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-            z-index: 100;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            z-index: 99;
             text-decoration: none;
+        }
+
+        /* NO RESULTS MESSAGE */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            background: white;
+            border-radius: 12px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 1.6rem; }
+            .filter-card { padding: 16px; margin-top: -30px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>NCR To Let Services</h1>
-        <p>Find Flats, Apartments & Rental Properties in Noida/NCR</p>
-    </header>
+    <!-- NAVBAR -->
+    <nav>
+        <a href="#" class="logo"><i class="fa-solid fa-building-user"></i> NCR <span>Properties</span></a>
+        <a href="tel:+919876543210" class="nav-contact"><i class="fa-solid fa-phone"></i> +91 98765 43210</a>
+    </nav>
 
+    <!-- HERO HEADER -->
+    <div class="hero-search-section">
+        <h1 class="hero-title">Find Your Perfect Property in NCR</h1>
+        <p class="hero-subtitle">Verified Apartments, Villas & Commercial Spaces in Noida, Ghaziabad & Gurgaon</p>
+    </div>
+
+    <!-- ADVANCED NCR LOCATION & BHK FILTERS -->
     <div class="container">
-        <h2 class="section-title">Featured Properties</h2>
+        <div class="filter-card">
+            <div class="filter-grid">
+                
+                <!-- FILTER 1: CITY/LOCATION -->
+                <div class="filter-group">
+                    <label>City / Region</label>
+                    <select id="filterCity" onchange="applyFilters()">
+                        <option value="all">All Locations</option>
+                        <option value="noida">Noida</option>
+                        <option value="greater-noida">Greater Noida</option>
+                        <option value="ghaziabad">Ghaziabad (Indirapuram/Vaishali)</option>
+                        <option value="gurgaon">Gurgaon</option>
+                        <option value="delhi">Delhi</option>
+                    </select>
+                </div>
 
-        <div class="property-grid">
+                <!-- FILTER 2: PURPOSE (SALE/RENT/SOLD) -->
+                <div class="filter-group">
+                    <label>Purpose</label>
+                    <select id="filterPurpose" onchange="applyFilters()">
+                        <option value="all">Buy / Rent / Sold</option>
+                        <option value="sale">For Sale</option>
+                        <option value="rent">For Rent</option>
+                        <option value="sold">Sold Out</option>
+                    </select>
+                </div>
+
+                <!-- FILTER 3: BHK / TYPE -->
+                <div class="filter-group">
+                    <label>Bedrooms (BHK)</label>
+                    <select id="filterBhk" onchange="applyFilters()">
+                        <option value="all">Any BHK</option>
+                        <option value="1bhk">1 BHK / Studio</option>
+                        <option value="2bhk">2 BHK</option>
+                        <option value="3bhk">3 BHK</option>
+                        <option value="4bhk">4+ BHK / Villa</option>
+                    </select>
+                </div>
+
+                <!-- FILTER 4: SEARCH KEYWORD -->
+                <div class="filter-group">
+                    <label>Search Sector / Name</label>
+                    <input type="text" id="filterKeyword" onkeyup="applyFilters()" placeholder="e.g. Sector 62, Express Way...">
+                </div>
+
+            </div>
             
-            <!-- Property Card 1 (Photo) -->
-            <div class="card">
-                <!-- Photo lagane ke liye src me image URL ya file path dalein -->
-                <img class="card-media" src="https://via.placeholder.com/400x200?text=Flat+Photo+1" alt="2 BHK Flat">
-                <div class="card-content">
+            <button class="btn-reset" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Reset All Filters</button>
+        </div>
+
+        <!-- PROPERTY SECTION HEADER -->
+        <div class="section-header">
+            <h2 class="section-title">Featured NCR Listings</h2>
+        </div>
+
+        <!-- PROPERTY LISTINGS GRID -->
+        <div class="property-grid" id="propertyGrid">
+
+            <!-- ================================================================= -->
+            <!-- PROPERTY CARD 1 (2 BHK NOIDA - FOR SALE) -->
+            <!-- ================================================================= -->
+            <div class="card property-item" data-city="noida" data-purpose="sale" data-bhk="2bhk" data-search="sector 62 noida 2bhk flat">
+                <div class="card-media-box">
+                    <span class="badge badge-type">Apartment</span>
+                    <span class="badge badge-status status-sale">For Sale</span>
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80" alt="Property Photo">
+                    <span class="city-tag"><i class="fa-solid fa-location-dot"></i> Sector 62, Noida</span>
+                </div>
+                <div class="card-body">
+                    <p class="price">₹55.0 Lakhs</p>
                     <h3 class="card-title">2 BHK Semi-Furnished Flat</h3>
-                    <p class="price">₹25,000 / Month</p>
-                    <p class="details"><i class="fa-solid fa-location-dot"></i> Sector 62, Noida</p>
+                    <p class="location"><i class="fa-solid fa-map-pin"></i> Near Metro Station, Sector 62</p>
+                    
+                    <div class="specs-grid">
+                        <div class="spec-item"><strong>2 BHK</strong>Bedrooms</div>
+                        <div class="spec-item"><strong>1050</strong>Sq. Ft.</div>
+                        <div class="spec-item"><strong>4th</strong>Floor</div>
+                    </div>
+
                     <div class="btn-group">
-                        <a href="tel:+910000000000" class="btn btn-call"><i class="fa-solid fa-phone"></i> Call</a>
-                        <a href="https://wa.me/910000000000?text=Hi,%20I%20am%20interested%20in%202%20BHK%20Flat" target="_blank" class="btn btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                        <a href="tel:+919876543210" class="btn btn-call"><i class="fa-solid fa-phone"></i> Call</a>
+                        <a href="https://wa.me/919876543210?text=Hi,%20I%20am%20interested%20in%202%20BHK%20in%20Sector%2062%20Noida" target="_blank" class="btn btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Property Card 2 (Video / Reel) -->
-            <div class="card">
-                <!-- Video/Reel lagane ke liye video tag ka use karein -->
-                <video class="card-media" controls poster="https://via.placeholder.com/400x200?text=Video+Thumbnail">
-                    <source src="your-property-video.mp4" type="video/mp4">
-                    Your browser does not support video.
-                </video>
-                <div class="card-content">
-                    <h3 class="card-title">3 BHK Luxury Flat Video Tour</h3>
-                    <p class="price">₹35,000 / Month</p>
-                    <p class="details"><i class="fa-solid fa-location-dot"></i> Indirapuram, Ghaziabad</p>
+            <!-- ================================================================= -->
+            <!-- PROPERTY CARD 2 (3 BHK GHAZIABAD - FOR RENT) -->
+            <!-- ================================================================= -->
+            <div class="card property-item" data-city="ghaziabad" data-purpose="rent" data-bhk="3bhk" data-search="indirapuram ghaziabad 3bhk rent">
+                <div class="card-media-box">
+                    <span class="badge badge-type">Highrise</span>
+                    <span class="badge badge-status status-rent">For Rent</span>
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" alt="Property Photo">
+                    <span class="city-tag"><i class="fa-solid fa-location-dot"></i> Indirapuram, Ghaziabad</span>
+                </div>
+                <div class="card-body">
+                    <p class="price">₹24,000 / Month</p>
+                    <h3 class="card-title">3 BHK Luxury Apartment</h3>
+                    <p class="location"><i class="fa-solid fa-map-pin"></i> Ahinsa Khand 2, Indirapuram</p>
+                    
+                    <div class="specs-grid">
+                        <div class="spec-item"><strong>3 BHK</strong>Bedrooms</div>
+                        <div class="spec-item"><strong>1450</strong>Sq. Ft.</div>
+                        <div class="spec-item"><strong>8th</strong>Floor</div>
+                    </div>
+
                     <div class="btn-group">
-                        <a href="tel:+910000000000" class="btn btn-call"><i class="fa-solid fa-phone"></i> Call</a>
-                        <a href="https://wa.me/910000000000?text=Hi,%20I%20am%20interested%20in%203%20BHK%20Flat" target="_blank" class="btn btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                        <a href="tel:+919876543210" class="btn btn-call"><i class="fa-solid fa-phone"></i> Call</a>
+                        <a href="https://wa.me/919876543210?text=Hi,%20I%20am%20interested%20in%203%20BHK%20Rent%20Indirapuram" target="_blank" class="btn btn-wa"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- PROPERTY CARD 3 (4 BHK GREATER NOIDA - SOLD OUT EXAMPLE) -->
+            <!-- ================================================================= -->
+            <div class="card property-item is-sold" data-city="greater-noida" data-purpose="sold" data-bhk="4bhk" data-search="greater noida villa 4bhk sold">
+                <div class="card-media-box">
+                    <span class="badge badge-type">Villa</span>
+                    <span class="badge badge-status status-sold">SOLD OUT</span>
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" alt="Property Photo">
+                    <span class="city-tag"><i class="fa-solid fa-location-dot"></i> Greater Noida West</span>
+                </div>
+                <div class="card-body">
+                    <p class="price">₹1.15 Crore</p>
+                    <h3 class="card-title">4 BHK Independent Villa</h3>
+                    <p class="location"><i class="fa-solid fa-map-pin"></i> Techzone 4, Greater Noida W</p>
+                    
+                    <div class="specs-grid">
+                        <div class="spec-item"><strong>4 BHK</strong>Bedrooms</div>
+                        <div class="spec-item"><strong>2200</strong>Sq. Ft.</div>
+                        <div class="spec-item"><strong>G+1</strong>Duplex</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-sold"><i class="fa-solid fa-lock"></i> PROPERTY SOLD OUT</button>
                     </div>
                 </div>
             </div>
 
         </div>
+
+        <!-- NO RESULTS PLACEHOLDER -->
+        <div class="no-results" id="noResults">
+            <h3><i class="fa-solid fa-building-circle-exclamation"></i> No Matching Properties Found</h3>
+            <p>Try changing your location or BHK filters to see more results.</p>
+        </div>
     </div>
 
-    <!-- Screen par niche permanent Floating WhatsApp Button -->
-    <a href="https://wa.me/910000000000?text=Hi,%20I%20want%20to%20inquire%20about%20rental%20properties" class="whatsapp-float" target="_blank">
+    <!-- FLOATING WHATSAPP -->
+    <a href="https://wa.me/919876543210?text=Hi,%20I%20am%20looking%20for%20a%20property%20in%20NCR" class="wa-float" target="_blank">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- MULTI-FILTER JAVASCRIPT LOGIC -->
+    <script>
+        function applyFilters() {
+            const city = document.getElementById('filterCity').value;
+            const purpose = document.getElementById('filterPurpose').value;
+            const bhk = document.getElementById('filterBhk').value;
+            const keyword = document.getElementById('filterKeyword').value.toLowerCase();
+
+            const items = document.querySelectorAll('.property-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const itemCity = item.getAttribute('data-city');
+                const itemPurpose = item.getAttribute('data-purpose');
+                const itemBhk = item.getAttribute('data-bhk');
+                const itemSearch = item.getAttribute('data-search').toLowerCase();
+
+                const matchCity = (city === 'all' || itemCity === city);
+                const matchPurpose = (purpose === 'all' || itemPurpose === purpose);
+                const matchBhk = (bhk === 'all' || itemBhk === bhk);
+                const matchKeyword = (keyword === '' || itemSearch.includes(keyword));
+
+                if (matchCity && matchPurpose && matchBhk && matchKeyword) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            document.getElementById('noResults').style.display = (visibleCount === 0) ? 'block' : 'none';
+        }
+
+        function resetFilters() {
+            document.getElementById('filterCity').value = 'all';
+            document.getElementById('filterPurpose').value = 'all';
+            document.getElementById('filterBhk').value = 'all';
+            document.getElementById('filterKeyword').value = '';
+            applyFilters();
+        }
+    </script>
 </body>
 </html>
