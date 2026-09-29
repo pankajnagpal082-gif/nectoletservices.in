@@ -20,7 +20,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding-bottom: 3rem; }
         
-        header { background: var(--primary); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); sticky: top; }
+        header { background: var(--primary); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .logo { font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
         .nav-btns { display: flex; gap: 10px; }
         .btn { padding: 0.6rem 1.2rem; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
@@ -224,18 +224,14 @@
     </div>
 
     <script>
-        // -------------------------------------------------------------
-        // ⚠️ STEP 3: Replace Your Supabase Details Here
-        const SUPABASE_URL = https://jgbodhbtphkidodalqtr.supabase.co/rest/v1/
-        const SUPABASE_KEY = sb_publishable_OFP8GabH6ks1Fmd4Gl6QsQ_XoFbrFeF
+        const SUPABASE_URL = 'https://jgbodhbtphkidodalqtr.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_OFP8GabH6ks1Fmd4Gl6QsQ_XoFbrFeF';
         const MY_WHATSAPP_NUMBER = '9253174766';
-        // -------------------------------------------------------------
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let allProperties = [];
         let isAdminLoggedIn = false;
 
-        // Fetch Properties from Supabase
         async function fetchProperties() {
             const { data, error } = await supabaseClient
                 .from('properties')
@@ -244,21 +240,20 @@
 
             if (error) {
                 console.error(error);
-                document.getElementById('propertyGrid').innerHTML = '<p>Error loading properties. Check Supabase connection.</p>';
+                document.getElementById('propertyGrid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Error loading properties. Please check Supabase table policies.</p>';
                 return;
             }
 
-            allProperties = data;
+            allProperties = data || [];
             renderProperties(allProperties);
         }
 
-        // Render Cards
         function renderProperties(properties) {
             const grid = document.getElementById('propertyGrid');
             grid.innerHTML = '';
 
             if (properties.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No matching properties found.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No properties found. Click on "Sell/Rent Property" to add one!</p>';
                 return;
             }
 
@@ -308,7 +303,6 @@
             });
         }
 
-        // Search & Filters
         function applyFilters() {
             const city = document.getElementById('filterCity').value.toLowerCase();
             const purpose = document.getElementById('filterPurpose').value;
@@ -326,11 +320,9 @@
             renderProperties(filtered);
         }
 
-        // Modal Handlers
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Admin Logins
         function verifyAdmin() {
             const pass = document.getElementById('adminPassword').value;
             if (pass === '1234') {
@@ -350,7 +342,6 @@
             renderProperties(allProperties);
         }
 
-        // Add/Edit Property Form Submit
         async function handleFormSubmit(e) {
             e.preventDefault();
             const editId = document.getElementById('editPropertyId').value;
@@ -373,10 +364,8 @@
 
             let result;
             if (editId) {
-                // Update
                 result = await supabaseClient.from('properties').update(propertyData).eq('id', editId);
             } else {
-                // Insert
                 result = await supabaseClient.from('properties').insert([propertyData]);
             }
 
@@ -391,7 +380,6 @@
             }
         }
 
-        // Edit Action
         function editProperty(id) {
             const item = allProperties.find(p => p.id === id);
             if (!item) return;
@@ -415,7 +403,6 @@
             openModal('addPropertyModal');
         }
 
-        // Delete Action
         async function deleteProperty(id) {
             if (confirm('Are you sure you want to delete this property?')) {
                 const { error } = await supabaseClient.from('properties').delete().eq('id', id);
@@ -427,7 +414,6 @@
             }
         }
 
-        // Initial Load
         fetchProperties();
     </script>
 </body>
