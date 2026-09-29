@@ -1,2 +1,434 @@
-const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';https://jgbodhbtphkidodalqtr.supabase.co/rest/v1/ 
-const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';sb_publishable_OFP8GabH6ks1Fmd4Gl6QsQ_XoFbrFeF
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCR Properties | Buy, Sell & Rent</title>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --accent: #25d366;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 3rem; }
+        
+        header { background: var(--primary); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); sticky: top; }
+        .logo { font-size: 1.6rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .nav-btns { display: flex; gap: 10px; }
+        .btn { padding: 0.6rem 1.2rem; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-post { background: #f59e0b; color: white; }
+        .btn-admin { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-admin:hover { background: rgba(255,255,255,0.3); }
+
+        /* Hero & Filters */
+        .hero { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 3rem 1rem; text-align: center; }
+        .search-container { max-width: 1000px; margin: -2rem auto 2rem auto; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+        .filter-group label { display: block; font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
+        .filter-group select, .filter-group input { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; }
+
+        /* Property Grid */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; margin-top: 1.5rem; }
+        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s; border: 1px solid #e2e8f0; position: relative; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .card-img-wrap { position: relative; height: 220px; }
+        .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .badge { position: absolute; top: 12px; left: 12px; background: var(--primary); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .card-body { padding: 1.25rem; }
+        .card-price { font-size: 1.4rem; color: var(--primary-light); font-weight: 800; }
+        .card-sqft { font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 0.5rem; }
+        .card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+        .card-specs { display: flex; gap: 12px; font-size: 0.85rem; color: #475569; background: #f1f5f9; padding: 0.5rem; border-radius: 6px; margin: 0.75rem 0; }
+        .card-location { font-size: 0.85rem; color: #64748b; margin-bottom: 1rem; display: flex; align-items: center; gap: 4px; }
+        .card-location a { color: var(--primary-light); text-decoration: none; font-weight: 600; }
+        
+        .card-actions { display: flex; gap: 8px; margin-top: 1rem; }
+        .btn-whatsapp { background: var(--accent); color: white; text-decoration: none; flex: 1; text-align: center; padding: 0.6rem; border-radius: 6px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-video { background: #ef4444; color: white; padding: 0.6rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem; }
+
+        .admin-controls-bar { background: #fef3c7; border: 1px solid #f59e0b; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; display: none; align-items: center; justify-content: space-between; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; overflow-y: auto; padding: 1rem; }
+        .modal-content { background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group.full { grid-column: span 2; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; }
+        .btn-submit { background: var(--primary-light); color: white; width: 100%; padding: 0.8rem; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><i class="fa-solid fa-house-circle-check"></i> NCR Properties</div>
+        <div class="nav-btns">
+            <button class="btn btn-post" onclick="openModal('addPropertyModal')"><i class="fa-solid fa-plus"></i> Sell/Rent Property</button>
+            <button class="btn btn-admin" onclick="openModal('adminModal')"><i class="fa-solid fa-user-lock"></i> Admin</button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Find Your Dream Home in NCR</h1>
+        <p>Buy, Sell & Rent Verified Properties in Noida, Greater Noida & Ghaziabad</p>
+    </section>
+
+    <!-- Search & Filters -->
+    <div class="search-container">
+        <div class="filter-group">
+            <label>City</label>
+            <select id="filterCity" onchange="applyFilters()">
+                <option value="">All Cities</option>
+                <option value="noida">Noida</option>
+                <option value="greater noida">Greater Noida</option>
+                <option value="ghaziabad">Ghaziabad</option>
+                <option value="gurugram">Gurugram</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Purpose</label>
+            <select id="filterPurpose" onchange="applyFilters()">
+                <option value="">Sale & Rent</option>
+                <option value="sale">For Sale</option>
+                <option value="rent">For Rent</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>BHK</label>
+            <select id="filterBhk" onchange="applyFilters()">
+                <option value="">Any BHK</option>
+                <option value="1bhk">1 BHK</option>
+                <option value="2bhk">2 BHK</option>
+                <option value="3bhk">3 BHK</option>
+                <option value="4bhk">4 BHK+</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Search Keyword</label>
+            <input type="text" id="searchKeyword" placeholder="Sector, Society name..." onkeyup="applyFilters()">
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Admin Bar (When Logged In) -->
+        <div id="adminBar" class="admin-controls-bar">
+            <span><strong>👑 Admin Mode Active!</strong> You can now Edit or Delete properties directly.</span>
+            <button class="btn btn-post" style="background:#dc2626;" onclick="logoutAdmin()">Logout Admin</button>
+        </div>
+
+        <div id="propertyGrid" class="grid">
+            <p>Loading properties...</p>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Admin Login</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('adminModal')"></i>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="adminPassword" placeholder="Default Password: 1234">
+            </div>
+            <button class="btn-submit" onclick="verifyAdmin()">Login</button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Property Modal -->
+    <div id="addPropertyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Post Your Property</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('addPropertyModal')"></i>
+            </div>
+            <form id="propertyForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="editPropertyId">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Property Title *</label>
+                        <input type="text" id="pTitle" required placeholder="e.g. 3 BHK Luxury Apartment in Gaur City">
+                    </div>
+                    <div class="form-group">
+                        <label>Total Price *</label>
+                        <input type="text" id="pPrice" required placeholder="e.g. ₹65 Lakhs or ₹22,000/month">
+                    </div>
+                    <div class="form-group">
+                        <label>Price Per Sqft</label>
+                        <input type="text" id="pPriceSqft" placeholder="e.g. ₹5,500 / sqft">
+                    </div>
+                    <div class="form-group">
+                        <label>Purpose *</label>
+                        <select id="pPurpose" required>
+                            <option value="sale">For Sale</option>
+                            <option value="rent">For Rent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input type="text" id="pCity" required placeholder="e.g. Noida">
+                    </div>
+                    <div class="form-group">
+                        <label>BHK Config *</label>
+                        <select id="pBhk" required>
+                            <option value="1bhk">1 BHK</option>
+                            <option value="2bhk">2 BHK</option>
+                            <option value="3bhk">3 BHK</option>
+                            <option value="4bhk">4+ BHK</option>
+                            <option value="plot">Plot / Land</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Area Size</label>
+                        <input type="text" id="pArea" placeholder="e.g. 1250 sqft">
+                    </div>
+                    <div class="form-group">
+                        <label>Floor</label>
+                        <input type="text" id="pFloor" placeholder="e.g. 5th Floor (Total 14)">
+                    </div>
+                    <div class="form-group">
+                        <label>Seller Contact / WhatsApp</label>
+                        <input type="text" id="pContact" placeholder="Your Phone Number" value="9253174766">
+                    </div>
+                    <div class="form-group full">
+                        <label>Exact Location / Address *</label>
+                        <input type="text" id="pLocation" required placeholder="e.g. Sector 62, Near Metro Station, Noida">
+                    </div>
+                    <div class="form-group full">
+                        <label>Google Maps Link (Exact Location)</label>
+                        <input type="url" id="pMapUrl" placeholder="https://maps.google.com/?q=...">
+                    </div>
+                    <div class="form-group full">
+                        <label>Photo URL *</label>
+                        <input type="url" id="pImage" required placeholder="https://images.unsplash.com/...">
+                    </div>
+                    <div class="form-group full">
+                        <label>Video Link (YouTube/Drive Link)</label>
+                        <input type="url" id="pVideoUrl" placeholder="https://youtube.com/...">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" style="margin-top: 1rem;">Save & Publish Property</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // -------------------------------------------------------------
+        // ⚠️ STEP 3: Replace Your Supabase Details Here
+        const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'; 
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const MY_WHATSAPP_NUMBER = '9253174766';
+        // -------------------------------------------------------------
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let allProperties = [];
+        let isAdminLoggedIn = false;
+
+        // Fetch Properties from Supabase
+        async function fetchProperties() {
+            const { data, error } = await supabaseClient
+                .from('properties')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                document.getElementById('propertyGrid').innerHTML = '<p>Error loading properties. Check Supabase connection.</p>';
+                return;
+            }
+
+            allProperties = data;
+            renderProperties(allProperties);
+        }
+
+        // Render Cards
+        function renderProperties(properties) {
+            const grid = document.getElementById('propertyGrid');
+            grid.innerHTML = '';
+
+            if (properties.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem;">No matching properties found.</p>';
+                return;
+            }
+
+            properties.forEach(item => {
+                const mapBtnHtml = item.map_url ? `<a href="${item.map_url}" target="_blank"><i class="fa-solid fa-map-location-dot"></i> View Map</a>` : '';
+                const videoBtnHtml = item.video_url ? `<a href="${item.video_url}" target="_blank" class="btn-video"><i class="fa-solid fa-video"></i> Video</a>` : '';
+                const adminActions = isAdminLoggedIn ? `
+                    <div style="margin-top: 10px; display: flex; gap: 5px;">
+                        <button onclick="editProperty(${item.id})" style="background:#3b82f6; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">✏️ Edit</button>
+                        <button onclick="deleteProperty(${item.id})" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">🗑️ Delete</button>
+                    </div>
+                ` : '';
+
+                const waMessage = encodeURIComponent(`Hi, I am interested in your property: "${item.title}" priced at ${item.price} (${item.location}). Please share details.`);
+
+                grid.innerHTML += `
+                    <div class="card">
+                        <div class="card-img-wrap">
+                            <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220?text=No+Image'">
+                            <span class="badge">${item.purpose}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-price">${item.price}</div>
+                            ${item.price_per_sqft ? `<div class="card-sqft">${item.price_per_sqft}</div>` : ''}
+                            <div class="card-title">${item.title}</div>
+                            
+                            <div class="card-specs">
+                                <span><i class="fa-solid fa-city"></i> ${item.city.toUpperCase()}</span> |
+                                <span><i class="fa-solid fa-bed"></i> ${item.bhk.toUpperCase()}</span> |
+                                <span><i class="fa-solid fa-ruler-combined"></i> ${item.area || 'N/A'}</span>
+                            </div>
+
+                            <div class="card-location">
+                                <i class="fa-solid fa-location-dot"></i> ${item.location} ${mapBtnHtml}
+                            </div>
+
+                            <div class="card-actions">
+                                <a href="https://wa.me/91${MY_WHATSAPP_NUMBER}?text=${waMessage}" target="_blank" class="btn-whatsapp">
+                                    <i class="fa-brands fa-whatsapp"></i> WhatsApp Enquiry
+                                </a>
+                                ${videoBtnHtml}
+                            </div>
+                            ${adminActions}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Search & Filters
+        function applyFilters() {
+            const city = document.getElementById('filterCity').value.toLowerCase();
+            const purpose = document.getElementById('filterPurpose').value;
+            const bhk = document.getElementById('filterBhk').value;
+            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+
+            const filtered = allProperties.filter(item => {
+                const matchCity = !city || item.city.toLowerCase().includes(city);
+                const matchPurpose = !purpose || item.purpose === purpose;
+                const matchBhk = !bhk || item.bhk.toLowerCase() === bhk;
+                const matchKeyword = !keyword || item.title.toLowerCase().includes(keyword) || item.location.toLowerCase().includes(keyword);
+                return matchCity && matchPurpose && matchBhk && matchKeyword;
+            });
+
+            renderProperties(filtered);
+        }
+
+        // Modal Handlers
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Admin Logins
+        function verifyAdmin() {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === '1234') {
+                isAdminLoggedIn = true;
+                document.getElementById('adminBar').style.display = 'flex';
+                closeModal('adminModal');
+                renderProperties(allProperties);
+                alert('Logged in as Admin!');
+            } else {
+                alert('Wrong Password!');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminBar').style.display = 'none';
+            renderProperties(allProperties);
+        }
+
+        // Add/Edit Property Form Submit
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editPropertyId').value;
+
+            const propertyData = {
+                title: document.getElementById('pTitle').value,
+                price: document.getElementById('pPrice').value,
+                price_per_sqft: document.getElementById('pPriceSqft').value,
+                purpose: document.getElementById('pPurpose').value,
+                city: document.getElementById('pCity').value,
+                bhk: document.getElementById('pBhk').value,
+                area: document.getElementById('pArea').value,
+                floor: document.getElementById('pFloor').value,
+                seller_contact: document.getElementById('pContact').value,
+                location: document.getElementById('pLocation').value,
+                map_url: document.getElementById('pMapUrl').value,
+                image: document.getElementById('pImage').value,
+                video_url: document.getElementById('pVideoUrl').value
+            };
+
+            let result;
+            if (editId) {
+                // Update
+                result = await supabaseClient.from('properties').update(propertyData).eq('id', editId);
+            } else {
+                // Insert
+                result = await supabaseClient.from('properties').insert([propertyData]);
+            }
+
+            if (result.error) {
+                alert('Error saving property: ' + result.error.message);
+            } else {
+                alert(editId ? 'Property Updated Successfully!' : 'Property Posted Successfully!');
+                closeModal('addPropertyModal');
+                document.getElementById('propertyForm').reset();
+                document.getElementById('editPropertyId').value = '';
+                fetchProperties();
+            }
+        }
+
+        // Edit Action
+        function editProperty(id) {
+            const item = allProperties.find(p => p.id === id);
+            if (!item) return;
+
+            document.getElementById('editPropertyId').value = item.id;
+            document.getElementById('pTitle').value = item.title;
+            document.getElementById('pPrice').value = item.price;
+            document.getElementById('pPriceSqft').value = item.price_per_sqft || '';
+            document.getElementById('pPurpose').value = item.purpose;
+            document.getElementById('pCity').value = item.city;
+            document.getElementById('pBhk').value = item.bhk;
+            document.getElementById('pArea').value = item.area || '';
+            document.getElementById('pFloor').value = item.floor || '';
+            document.getElementById('pContact').value = item.seller_contact || '';
+            document.getElementById('pLocation').value = item.location;
+            document.getElementById('pMapUrl').value = item.map_url || '';
+            document.getElementById('pImage').value = item.image;
+            document.getElementById('pVideoUrl').value = item.video_url || '';
+
+            document.getElementById('modalTitle').innerText = 'Edit Property Details';
+            openModal('addPropertyModal');
+        }
+
+        // Delete Action
+        async function deleteProperty(id) {
+            if (confirm('Are you sure you want to delete this property?')) {
+                const { error } = await supabaseClient.from('properties').delete().eq('id', id);
+                if (error) alert('Error deleting: ' + error.message);
+                else {
+                    alert('Property deleted!');
+                    fetchProperties();
+                }
+            }
+        }
+
+        // Initial Load
+        fetchProperties();
+    </script>
+</body>
+</html>
